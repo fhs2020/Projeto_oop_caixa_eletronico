@@ -103,6 +103,43 @@ public class ConectaBanco {
 	}
     
     
+         public void updateSaldo (float deposito, int numeroConta) throws SQLException {
+
+               Statement statement = null;
+               
+               String query = "update conta set saldo = ? where NumeroConta = ?";
+               
+                
+		try {
+                            Connection dbConn = DriverManager.getConnection(caminho, usuario, senhaBanco);
+                    
+                            preparedStatement = dbConn.prepareStatement(query);
+                    
+                            preparedStatement.setFloat(1, deposito);
+                            preparedStatement.setInt(2, numeroConta);
+                 
+                            preparedStatement.executeUpdate();
+                        
+			System.out.println("Deposito feito com sucesso!");
+
+		} catch (SQLException e) {
+
+			System.out.println("Nao inseriu os dados no banco corretamente! Saldo nao foi alterado!");
+
+		} finally {
+
+			if (statement != null) {
+				statement.close();
+			}
+
+			if (conn != null) {
+				conn.close();
+			}
+
+		}
+
+	}
+    
         public void buscarSaldo(int numeroConta, String senha) throws SQLException {
 		
 		Statement statement = null;
@@ -123,7 +160,7 @@ public class ConectaBanco {
                             
                             while (rs.next()) {
                                 
-                                float saldoN = rs.getFloat("saldo");
+                                float saldoN1 = rs.getFloat("saldo");
                                 int contaIdN = rs.getInt("ContaId");
                                 numContaN = rs.getInt("NumeroConta");
                                 String nomeCli = rs.getString("NomeCliente");
@@ -133,8 +170,9 @@ public class ConectaBanco {
                                    DecimalFormat df = new DecimalFormat("####0.00");
                                     
                                     System.out.println("\n");
+
                                     System.out.println("***** Seja bem vindo " + nomeCli + "!");
-                                    System.out.println("***** Saldo disponivel $R  " +  df.format(saldoN));
+                                    System.out.println("***** Saldo disponivel $R  " +  df.format(saldoN1));
                                     System.out.println("\n");
                                     System.out.println("Precione enter para continuar");
                                     scanner.nextLine();
@@ -171,7 +209,106 @@ public class ConectaBanco {
 
 		}
 	}
-    
+        
+        
+          public void depositar(int numeroConta, String senha, float valorDeposito) throws SQLException {
+		
+		Statement statement = null;
+                Scanner scanner = new Scanner(System.in);
+                Account account = new Account();
+                
+                String query =  "SELECT * from conta WHERE  NumeroConta = ? and senha = ?";
+                
+		try {
+                            Connection dbConn = DriverManager.getConnection(caminho, usuario, senhaBanco);
+                            
+                            preparedStatement = dbConn.prepareStatement(query);
+                            preparedStatement.setInt(1, numeroConta);
+                            preparedStatement.setString(2, senha);
+                            
+                            ResultSet rs = preparedStatement.executeQuery();
+                            
+                            while (rs.next()) {
+                                
+                                float saldoAtual = rs.getFloat("saldo");
+                                int contaIdN = rs.getInt("ContaId");
+                                int numContaNoBanco = rs.getInt("NumeroConta");
+                                String nomeCli = rs.getString("NomeCliente");
+                                
+                                account.depositoRegraDeNegocio(true, valorDeposito, saldoAtual, numeroConta, numContaNoBanco, nomeCli);
+                            }
+
+                } catch (SQLException e) {
+
+			System.out.println("Nao inseriu os dados no banco corretamente!");
+
+		} finally {
+
+			if (statement != null) {
+				statement.close();
+			}
+
+			if (conn != null) {
+				conn.close();
+			}
+		}
+	}
+          
+          
+           public void sacar(int numeroConta, String senha, float valorSaque) throws SQLException {
+		
+		Statement statement = null;
+                Scanner scanner = new Scanner(System.in);
+                Account account = new Account();
+                
+                String query =  "SELECT * from conta WHERE  NumeroConta = ? and senha = ?";
+                
+		try {
+                            Connection dbConn = DriverManager.getConnection(caminho, usuario, senhaBanco);
+                            
+                            preparedStatement = dbConn.prepareStatement(query);
+                            preparedStatement.setInt(1, numeroConta);
+                            preparedStatement.setString(2, senha);
+                            
+                            ResultSet rs = preparedStatement.executeQuery();
+                            
+                            int numContaN = 0;
+                            float novoSaldo = 0;
+                            
+                            while (rs.next()) {
+                                float saldoN = rs.getFloat("saldo");
+                                int contaIdN = rs.getInt("ContaId");
+                                numContaN = rs.getInt("NumeroConta");
+                                String nomeCli = rs.getString("NomeCliente");
+                                
+                                novoSaldo = saldoN - valorSaque; 
+                                updateSaldo(novoSaldo, numContaN);
+                                
+                                if (nomeCli != null && numContaN == numeroConta){
+                                   
+                                        account.confirmarSaque(true, valorSaque, novoSaldo);
+                                }
+                                else{
+                                
+                                     account.confirmarSaque(false, valorSaque, novoSaldo);
+                                }
+                            }
+
+                } catch (SQLException e) {
+
+			System.out.println("Nao inseriu os dados no banco corretamente!");
+
+		} finally {
+
+			if (statement != null) {
+				statement.close();
+			}
+
+			if (conn != null) {
+				conn.close();
+			}
+		}
+	}
     
     public void desconecta(){
     
@@ -183,7 +320,6 @@ public class ConectaBanco {
            JOptionPane.showMessageDialog(null, "Erro ao tentar fechar conexão!\n Erro: " + ex.getMessage());
         }
     }
-    
-    
-    
 }
+
+

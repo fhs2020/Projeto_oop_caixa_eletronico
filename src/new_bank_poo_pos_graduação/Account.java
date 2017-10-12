@@ -1,3 +1,5 @@
+
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -7,6 +9,7 @@ package new_bank_poo_pos_graduação;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -61,26 +64,125 @@ public class Account {
     
     
     // Deposito
-    public void deposito(double valor){
+    public void deposito(float valDeposito, int numberoConta, String senha){
         
-        if (valor != 0){
+        if (valDeposito != 0){
         
-                   saldo = saldo + valor;
-                   transacaoAnterior = valor;
+            try {
+                con.depositar(numberoConta, senha, valDeposito);
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }
     
-    // Saque
-    public void saque(double valor){
+    
+        public void confirmarDeposito(boolean confirmacao, float valorDeposito, float novoSaldo){
         
-        if (valor != 0){
+                  Scanner scanner = new Scanner(System.in);
             
-                 saldo = saldo - valor;
-                 transacaoAnterior = -valor;
+                    if (confirmacao == true){
+
+                                     DecimalFormat df = new DecimalFormat("####0.00");
+
+                                                System.out.println("\n");
+                                                System.out.println("***** Obrigado pelo seu deposito no valor: " + valorDeposito);
+                                                System.out.println("***** Novo saldo disponivel $$R  " +  df.format(novoSaldo));
+                                                System.out.println("\n");
+                                                System.out.println("Precione enter para continuar");
+                                                scanner.nextLine();
+
+                    }
+                    else{
+                    
+                              System.out.println("****** Numero de conta ou senha invalida! Tente novamente ******");
+                                System.out.println("\n");
+                    
+                    }
+                    
+                         Account cliente1 = new Account();
+                             cliente1.mostrarMenu();
+
+    }
         
+        
+                public void depositoRegraDeNegocio(boolean confirmacao, float valorDeposito, float saldoAtual, int numConta, int numContaNoBD, String nomeCli) throws SQLException{
+        
+                  Scanner scanner = new Scanner(System.in);
+                  
+                  ConectaBanco con = new ConectaBanco();
+                  
+  
+                                float novoSaldo = saldoAtual + valorDeposito; 
+                                
+                               
+                                con.updateSaldo(novoSaldo, numConta);
+                                
+                                if (nomeCli != null && numContaNoBD == numConta){
+                                   
+                                     confirmarDeposito(true, valorDeposito, novoSaldo);
+                                }
+                                else{
+                                     confirmarDeposito(true, valorDeposito, novoSaldo);
+                                }
+                            
+                            
+                            if (numConta != numContaNoBD){
+                            
+                                System.out.println("****** Numero de conta ou senha invalida! Tente novamente ******");
+                                System.out.println("\n");
+                            }
+                           
+                             Account cliente1 = new Account();
+                             cliente1.mostrarMenu();
+    }
+    
+        
+        
+        
+        
+        public void confirmarSaque(boolean confirmacao, float valorSaque, float novoSaldo){
+        
+                  Scanner scanner = new Scanner(System.in);
+            
+                    if (confirmacao == true){
+
+                                     DecimalFormat df = new DecimalFormat("####0.00");
+
+                                                System.out.println("\n");
+                                                System.out.println("***** Obrigado pelo seu saque no valor: " + valorSaque);
+                                                System.out.println("***** Novo saldo disponivel $$$R  " +  df.format(novoSaldo));
+                                                System.out.println("\n");
+                                                System.out.println("Precione enter para continuar");
+                                                scanner.nextLine();
+
+                    }
+                    else{
+                    
+                              System.out.println("****** Numero de conta ou senha invalida! Tente novamente ******");
+                              System.out.println("\n");
+                    
+                    }
+                    
+                         Account cliente1 = new Account();
+                         cliente1.mostrarMenu();
+    }
+        
+        
+    
+        public void sacar(float valSaque, int numberoConta, String senha){
+        
+        if (valSaque != 0){
+        
+            try {
+                con.sacar(numberoConta, senha, valSaque);
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-   
     }
     
     void getTransacaoAnterior(){
@@ -115,8 +217,6 @@ public class Account {
         } catch (SQLException ex) {
             Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-     
     }
     
     public void setSaldo(double saldo){
@@ -168,20 +268,46 @@ public class Account {
                     break;
                     
                 case 'B':
+                    
+                    System.out.println("-----------------------------------------");
+                    System.out.println("Digite numero de sua conta  ");
+                    System.out.println("-----------------------------------------");
+                    int numConta = scanner.nextInt();
+                    scanner.nextLine();
+                    
+                    System.out.println("-----------------------------------------");
+                    System.out.println("Senha: ");
+                    System.out.println("-----------------------------------------");
+                    String passWD = scanner.nextLine();
+                    
                     System.out.println("-----------------------------------------");
                     System.out.println("Digite o valor para depositar: ");
                     System.out.println("-----------------------------------------");
-                    double valorDepoisto = scanner.nextInt();
-                    deposito(valorDepoisto);
+                    float vDepoisto = scanner.nextInt();
+                    
+                    deposito(vDepoisto, numConta, passWD);
+                    
                     System.out.println("\n");
                     break;
                     
                 case 'C':
                     System.out.println("-----------------------------------------");
-                    System.out.println("Digive to valor para sacar ");
+                    System.out.println("Digite numero de sua conta  ");
                     System.out.println("-----------------------------------------");
-                    double saqueValor = scanner.nextInt();
-                    saque(saqueValor);
+                    int numContaSaque = scanner.nextInt();
+                    scanner.nextLine();
+                    
+                    System.out.println("-----------------------------------------");
+                    System.out.println("Senha: ");
+                    System.out.println("-----------------------------------------");
+                    String passWDConta = scanner.nextLine();
+                    
+                    System.out.println("-----------------------------------------");
+                    System.out.println("Digite o valor para Sacar: ");
+                    System.out.println("-----------------------------------------");
+                    float saqueValor = scanner.nextInt();
+                    sacar(saqueValor, numContaSaque, passWDConta);
+                 
                     System.out.println("\n");
                     break;
                     
@@ -197,7 +323,7 @@ public class Account {
                     System.out.println("-----------------------------------------");
                     System.out.println("Nova conta bancaria, digite o numero da conta: ");
                     System.out.println("-----------------------------------------");
-                    int numConta = scanner.nextInt();
+                    int n1Conta = scanner.nextInt();
                     scanner.nextLine();
                
                     
@@ -228,7 +354,7 @@ public class Account {
                     System.out.println("-----------------------------------------");
                     String password = scanner.nextLine();
                     
-                    criarConta(saldo1, numConta, password, tipoCon, nomeCli);
+                    criarConta(saldo1, n1Conta, password, tipoCon, nomeCli);
                     System.out.println("\n");
                     
                     mostrarMenu();
@@ -256,3 +382,5 @@ public class Account {
  
     
 }
+
+
