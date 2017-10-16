@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package utilitarios;
 
 import java.sql.*;
@@ -18,10 +13,6 @@ import javax.swing.JOptionPane;
 import static jdk.nashorn.internal.objects.NativeMath.round;
 import new_bank_poo_pos_graduação.Account;
 
-/**
- *
- * @author usr_developer
- */
 public class ConectaBanco {
     
     public Statement stm;
@@ -32,8 +23,6 @@ public class ConectaBanco {
     private String usuario = "root";
     private String senhaBanco = "123456";
     public Connection conn;
-    
-    
     
     public void conexao(){
        
@@ -50,7 +39,7 @@ public class ConectaBanco {
     }
     
     
-    public void insertRecordIntoDbUserTable(float saldo, int numeroConta, String senha, String tipoConta, String nomeCliente) throws SQLException {
+    public boolean criaNovaContaBancaria(float saldo, int numeroConta, String senha, String tipoConta, String nomeCliente) throws SQLException {
 
                Statement statement = null;
                                                     
@@ -82,11 +71,12 @@ public class ConectaBanco {
                             preparedStatement.setInt(9, numeroConta);
                             preparedStatement.executeUpdate();
                         
-			System.out.println("Conta criada com sucesso!");
+                            return true;
 
 		} catch (SQLException e) {
 
-			System.out.println("Nao inseriu os dados no banco corretamente!SS");
+			System.out.println(e.toString());
+                        return false;
 
 		} finally {
 
@@ -97,27 +87,20 @@ public class ConectaBanco {
 			if (conn != null) {
 				conn.close();
 			}
-
 		}
-
 	}
-    
     
          public void updateSaldo (float deposito, int numeroConta) throws SQLException {
 
                Statement statement = null;
-               
                String query = "update conta set saldo = ? where NumeroConta = ?";
-               
                 
 		try {
                             Connection dbConn = DriverManager.getConnection(caminho, usuario, senhaBanco);
                     
                             preparedStatement = dbConn.prepareStatement(query);
-                    
                             preparedStatement.setFloat(1, deposito);
                             preparedStatement.setInt(2, numeroConta);
-                 
                             preparedStatement.executeUpdate();
                         
 			System.out.println("Deposito feito com sucesso!");
@@ -135,9 +118,7 @@ public class ConectaBanco {
 			if (conn != null) {
 				conn.close();
 			}
-
 		}
-
 	}
     
         public void buscarSaldo(int numeroConta, String senha) throws SQLException {
@@ -321,5 +302,3 @@ public class ConectaBanco {
         }
     }
 }
-
-

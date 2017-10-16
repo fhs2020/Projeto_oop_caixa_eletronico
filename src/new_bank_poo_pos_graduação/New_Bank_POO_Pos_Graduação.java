@@ -1,48 +1,24 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Projeto de OOP Java para disciplina Introdução à Programação OO - Java do Professor Marcelo 
+ * Participantes: Rayane Ferreira, Flavio H Sousa, Hyllner Silva, Manoel Rodrigues
+ * Descrição: Projeto de um caixa eletronico de um baco, podendo fazer deposito, saque, ver saldo, e listar um historico das ultimas transações
+ * Projeto usando banco de dados MySQL 
  */
 package new_bank_poo_pos_graduação;
 
-import java.util.Scanner;
 import utilitarios.ConectaBanco;
 
-/**
- *
- * @author usr_developer
- */
 public class New_Bank_POO_Pos_Graduação {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         
-        Account cliente1 = new Account(); // Criar objeto conta
-        
-        
+        Account contaCliente = new Account(); // Criar objeto conta
         
         ConectaBanco conecta = new ConectaBanco();
         
+        conecta.conexao(); // abre conexão com banco de dados
         
-        conecta.conexao();
-        
-        cliente1.mostrarMenu();
-        
-        
-        
-        
-       // System.out.println("Digite o numero de sua conta: ");
-        
-        //Scanner scanner = new Scanner(System.in);
-        //int pegarInput = scanner.nextInt();
-        
-        //String getInput = scanner.next();
-        
-        
-        
+        contaCliente.mostrarMenu();
         
     }
-    
 }

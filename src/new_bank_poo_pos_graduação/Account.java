@@ -1,14 +1,6 @@
-
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package new_bank_poo_pos_graduação;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Scanner;
@@ -16,10 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import utilitarios.ConectaBanco;
 
-/**
- *
- * @author usr_developer
- */
 public class Account {
     
     public double saldo; 
@@ -31,37 +19,34 @@ public class Account {
     public String NomeCliente;
     public String clienteId;
     
-    
-    
-        ConectaBanco con = new ConectaBanco();
-        
-        
-    
+    ConectaBanco con = new ConectaBanco();
     
     // zerar o balanço
     public Account(){
  
         saldo = 0.0; 
-        
-        
     }
-    
-    
-    //(float saldo, int numeroConta, String senha, String tipoConta, String nomeCliente)
     
     public void criarConta(float saldo, int numeroConta, String senha, String tipoConta, String nomeCliente){
             
         try {
-            con.insertRecordIntoDbUserTable(saldo, numeroConta, senha, tipoConta, nomeCliente);
+          
+            boolean resposta = con.criaNovaContaBancaria(saldo, numeroConta, senha, tipoConta, nomeCliente);
             
-            System.out.println("Obrigado!");
+            if (resposta == true){
+                
+             System.out.println("Conta criada com sucesso!");
+             System.out.println("Obrigado!");
+            }
+            else{
+             System.out.println("Nao inseriu os dados no banco corretamente!");
+            }
             
         } catch (SQLException ex) {
             
              System.out.println(ex.getMessage());
         }
     }
-    
     
     // Deposito
     public void deposito(float valDeposito, int numberoConta, String senha){
@@ -75,11 +60,9 @@ public class Account {
                 Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
     }
     
-    
-        public void confirmarDeposito(boolean confirmacao, float valorDeposito, float novoSaldo){
+    public void confirmarDeposito(boolean confirmacao, float valorDeposito, float novoSaldo){
         
                   Scanner scanner = new Scanner(System.in);
             
@@ -104,19 +87,14 @@ public class Account {
                     
                          Account cliente1 = new Account();
                              cliente1.mostrarMenu();
-
     }
         
         
-                public void depositoRegraDeNegocio(boolean confirmacao, float valorDeposito, float saldoAtual, int numConta, int numContaNoBD, String nomeCli) throws SQLException{
-        
-                  Scanner scanner = new Scanner(System.in);
+    public void depositoRegraDeNegocio(boolean confirmacao, float valorDeposito, float saldoAtual, int numConta, int numContaNoBD, String nomeCli) throws SQLException{
                   
                   ConectaBanco con = new ConectaBanco();
-                  
   
-                                float novoSaldo = saldoAtual + valorDeposito; 
-                                
+                        float novoSaldo = saldoAtual + valorDeposito; 
                                
                                 con.updateSaldo(novoSaldo, numConta);
                                 
@@ -128,7 +106,6 @@ public class Account {
                                      confirmarDeposito(true, valorDeposito, novoSaldo);
                                 }
                             
-                            
                             if (numConta != numContaNoBD){
                             
                                 System.out.println("****** Numero de conta ou senha invalida! Tente novamente ******");
@@ -138,10 +115,6 @@ public class Account {
                              Account cliente1 = new Account();
                              cliente1.mostrarMenu();
     }
-    
-        
-        
-        
         
         public void confirmarSaque(boolean confirmacao, float valorSaque, float novoSaldo){
         
@@ -157,22 +130,18 @@ public class Account {
                                                 System.out.println("\n");
                                                 System.out.println("Precione enter para continuar");
                                                 scanner.nextLine();
-
                     }
                     else{
                     
                               System.out.println("****** Numero de conta ou senha invalida! Tente novamente ******");
                               System.out.println("\n");
-                    
                     }
-                    
                          Account cliente1 = new Account();
                          cliente1.mostrarMenu();
     }
         
-        
     
-        public void sacar(float valSaque, int numberoConta, String senha){
+      public void sacar(float valSaque, int numberoConta, String senha){
         
         if (valSaque != 0){
         
@@ -185,7 +154,7 @@ public class Account {
         }
     }
     
-    void getTransacaoAnterior(){
+     public void getTransacaoAnterior(){
     
         if (transacaoAnterior > 0){
         
@@ -206,13 +175,10 @@ public class Account {
     
     // Pedir saldo 
     public void getSaldo(int nConta, String pwd){
-    
-        
          
         try {
 
             con.buscarSaldo(nConta, pwd);
-            
             
         } catch (SQLException ex) {
             Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
@@ -221,9 +187,7 @@ public class Account {
     
     public void setSaldo(double saldo){
         this.saldo = saldo;
- 
     }
-    
     
     public void mostrarMenu(){
     
@@ -375,12 +339,6 @@ public class Account {
         }while(opcao != 'S');
         
         System.out.println("Obrigado por usar nossos serviços!!!");
-    
     }
     
-    
- 
-    
 }
-
-
