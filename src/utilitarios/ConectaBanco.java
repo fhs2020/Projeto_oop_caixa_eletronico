@@ -19,9 +19,9 @@ public class ConectaBanco {
     public PreparedStatement preparedStatement = null;
     public ResultSet rs;
     private String driver = "com.mysql.jdbc.Driver";
-    private String caminho = "jdbc:mysql://localhost:3306/new_bank_fhs?zeroDateTimeBehavior=convertToNull";
+    private String caminho = "jdbc:mysql://localhost:3306/banco_rayane?zeroDateTimeBehavior=convertToNull";
     private String usuario = "root";
-    private String senhaBanco = "123456";
+    private String senhaBanco = "1234";
     public Connection conn;
     
     public void conexao(){
