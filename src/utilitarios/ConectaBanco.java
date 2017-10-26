@@ -3,14 +3,10 @@ package utilitarios;
 import java.sql.*;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.time.LocalDate;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import static jdk.nashorn.internal.objects.NativeMath.round;
 import new_bank_poo_pos_graduação.Account;
 
 public class ConectaBanco {
@@ -90,7 +86,7 @@ public class ConectaBanco {
 		}
 	}
     
-         public void updateSaldo (float deposito, int numeroConta) throws SQLException {
+         public boolean updateSaldo (float deposito, int numeroConta) throws SQLException {
 
                Statement statement = null;
                String query = "update conta set saldo = ? where NumeroConta = ?";
@@ -103,11 +99,12 @@ public class ConectaBanco {
                             preparedStatement.setInt(2, numeroConta);
                             preparedStatement.executeUpdate();
                         
-			System.out.println("Deposito feito com sucesso!");
+                        return true;
 
 		} catch (SQLException e) {
 
-			System.out.println("Nao inseriu os dados no banco corretamente! Saldo nao foi alterado!");
+                        e.printStackTrace();
+                        return false;
 
 		} finally {
 
@@ -121,10 +118,11 @@ public class ConectaBanco {
 		}
 	}
     
-        public void buscarSaldo(int numeroConta, String senha) throws SQLException {
+        public Account buscarSaldo(int numeroConta, String senha) throws SQLException {
 		
 		Statement statement = null;
                 Scanner scanner = new Scanner(System.in);
+                Account account = new Account();
                 
                 String query =  "SELECT * from conta WHERE  NumeroConta = ? and senha = ?";
                 
@@ -138,45 +136,28 @@ public class ConectaBanco {
                             ResultSet rs = preparedStatement.executeQuery();
                             
                             int numContaN = 0;
+                            float saldoN1 = 0;
+                            String nomeCli = "";
+                            int contaIdN = 0;
                             
                             while (rs.next()) {
                                 
-                                float saldoN1 = rs.getFloat("saldo");
-                                int contaIdN = rs.getInt("ContaId");
+                                saldoN1 = rs.getFloat("saldo");
+                                contaIdN = rs.getInt("ContaId");
                                 numContaN = rs.getInt("NumeroConta");
-                                String nomeCli = rs.getString("NomeCliente");
-                                
-                                if (nomeCli != null && numContaN == numeroConta){
-                                   
-                                   DecimalFormat df = new DecimalFormat("####0.00");
-                                    
-                                    System.out.println("\n");
+                                nomeCli = rs.getString("NomeCliente");
+                            }
 
-                                    System.out.println("***** Seja bem vindo " + nomeCli + "!");
-                                    System.out.println("***** Saldo disponivel $R  " +  df.format(saldoN1));
-                                    System.out.println("\n");
-                                    System.out.println("Precione enter para continuar");
-                                    scanner.nextLine();
-                                }
-                                else{
-                                
-                                    System.out.println("Numero de conta ou senha invalida!");
-                                }
-                             
-                            }
+                            account.saldo = new Double(saldoN1) ;
+                            account.numeroConta = numContaN;
+                            account.NomeCliente = nomeCli;
                             
-                            if (numContaN != numeroConta){
-                            
-                                System.out.println("****** Numero de conta ou senha invalida! Tente novamente ******");
-                                System.out.println("\n");
-                            }
-                           
-                             Account cliente1 = new Account();
-                             cliente1.mostrarMenu();
+                            return (account);                          
 
                 } catch (SQLException e) {
 
-			System.out.println("Nao inseriu os dados no banco corretamente!");
+			System.out.println(e.getMessage());
+                        return (account);
 
 		} finally {
 
@@ -187,8 +168,8 @@ public class ConectaBanco {
 			if (conn != null) {
 				conn.close();
 			}
-
 		}
+
 	}
         
         
