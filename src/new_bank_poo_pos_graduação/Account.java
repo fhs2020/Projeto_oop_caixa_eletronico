@@ -21,6 +21,8 @@ public class Account {
     
     ConectaBanco con = new ConectaBanco();
     
+    Scanner scanner = new Scanner(System.in);
+    
     // zerar o balanço
     public Account(){
  
@@ -96,16 +98,20 @@ public class Account {
   
                         float novoSaldo = saldoAtual + valorDeposito; 
                                
-                                con.updateSaldo(novoSaldo, numConta);
+                              boolean saldoAtualizado =  con.updateSaldo(novoSaldo, numConta);
                                 
+                              if (saldoAtualizado == true){
+                              
                                 if (nomeCli != null && numContaNoBD == numConta){
                                    
                                      confirmarDeposito(true, valorDeposito, novoSaldo);
                                 }
                                 else{
-                                     confirmarDeposito(true, valorDeposito, novoSaldo);
+                                     confirmarDeposito(false, valorDeposito, novoSaldo);
                                 }
-                            
+                              
+                              }
+
                             if (numConta != numContaNoBD){
                             
                                 System.out.println("****** Numero de conta ou senha invalida! Tente novamente ******");
@@ -178,7 +184,35 @@ public class Account {
          
         try {
 
-            con.buscarSaldo(nConta, pwd);
+        Account conta = new Account();
+            
+         conta = con.buscarSaldo(nConta, pwd);
+         
+         if (conta.NomeCliente != null && conta.numeroConta == nConta){
+                                   
+                                   DecimalFormat df = new DecimalFormat("####0.00");
+                                    
+                                    System.out.println("\n");
+
+                                    System.out.println("***** Seja bem vindo " + conta.NomeCliente + "!");
+                                    System.out.println("***** Saldo disponivel $R  " +  df.format(conta.saldo));
+                                    System.out.println("\n");
+                                    System.out.println("Precione enter para continuar");
+                                    scanner.nextLine();
+                                }
+                                else{
+                                
+                                    System.out.println("Numero de conta ou senha invalida!");
+                                }
+
+                            if (conta.numeroConta != nConta){
+                            
+                                System.out.println("****** Numero de conta ou senha invalida! Tente novamente ******");
+                                System.out.println("\n");
+                            }
+                           
+                             Account cliente1 = new Account();
+                             cliente1.mostrarMenu();
             
         } catch (SQLException ex) {
             Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
